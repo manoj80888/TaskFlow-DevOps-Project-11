@@ -35,18 +35,11 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
+          # Force the runner to use standard secure algorithms compatible with modern Ubuntu versions
+          key_ciphers: aes128-gcm@openssh.com,aes256-gcm@openssh.com
           script: |
-            # Set up the active KUBECONFIG mapping
             export KUBECONFIG=~/.kube/config
-            
-            # Establish base namespace
             kubectl create namespace taskflow --dry-run=client -o yaml | kubectl apply -f -
-            
-            # Pull manifests dynamically and apply them
             curl -s https://raw.githubusercontent.com/${{ github.repository }}/main/kubernetes/deployment.yaml | sed 's|YOUR_DOCKER_USERNAME|${{ secrets.DOCKER_USERNAME }}|g' | kubectl apply -f -
-            
-            # Set the image to the new run version tag
             kubectl set image deployment/taskflow-app taskflow=${{ secrets.DOCKER_USERNAME }}/taskflow:${{ github.run_number }} -n taskflow
-            
-            # Apply the service manifest
             curl -s https://raw.githubusercontent.com/${{ github.repository }}/main/kubernetes/service.yaml | kubectl apply -f -
