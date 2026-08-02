@@ -35,8 +35,8 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          # Force the runner to use standard secure algorithms compatible with modern Ubuntu versions
-          key_ciphers: aes128-gcm@openssh.com,aes256-gcm@openssh.com
+          # Enable legacy algorithm support to handle modern Ubuntu handshake baselines
+          use_insecure_cipher: true
           script: |
             export KUBECONFIG=~/.kube/config
             kubectl create namespace taskflow --dry-run=client -o yaml | kubectl apply -f -
