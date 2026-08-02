@@ -1,0 +1,23 @@
+# Custom values for kube-prometheus-stack
+# Usage:
+#   helm install prometheus prometheus-community/kube-prometheus-stack \
+#     -n monitoring -f monitoring/prometheus/values.yaml
+
+grafana:
+  adminPassword: "changeme-local-only"
+  service:
+    type: ClusterIP
+
+prometheus:
+  prometheusSpec:
+    retention: 5d
+    resources:
+      requests:
+        cpu: 200m
+        memory: 400Mi
+      limits:
+        cpu: 500m
+        memory: 800Mi
+
+alertmanager:
+  enabled: true

@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: taskflow-app
+  namespace: taskflow-prod
+  labels:
+    app: taskflow
+    env: prod
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: taskflow
+  template:
+    metadata:
+      labels:
+        app: taskflow
+    spec:
+      containers:
+        - name: taskflow
+          image: YOUR_DOCKER_USERNAME/taskflow:latest
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 5

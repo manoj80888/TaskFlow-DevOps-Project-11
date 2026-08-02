@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: taskflow-service
+  namespace: taskflow-test
+spec:
+  selector:
+    app: taskflow
+  ports:
+    - port: 80
+      targetPort: 80
+  type: NodePort

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TaskFlow</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<h1>TaskFlow Application</h1>
+<h2 id="version">Version 1.0</h2>
+
+<div class="card">
+    <h3>Add Task</h3>
+    <input type="text" id="taskInput" placeholder="Enter a new task">
+    <button onclick="addTask()">Add</button>
+</div>
+
+<div class="card">
+    <h3>Tasks</h3>
+    <ul id="taskList">
+        <li>Learn Git</li>
+        <li>Learn Docker</li>
+        <li>Learn Kubernetes</li>
+    </ul>
+</div>
+
+<footer>Served by NGINX &middot; Deployed via GitHub Actions &rarr; Docker Hub &rarr; Kubernetes</footer>
+
+<script>
+    function addTask() {
+        const input = document.getElementById('taskInput');
+        const value = input.value.trim();
+        if (!value) return;
+
+        const li = document.createElement('li');
+        li.textContent = value;
+
+        const del = document.createElement('button');
+        del.textContent = 'x';
+        del.className = 'delete-btn';
+        del.onclick = () => li.remove();
+        li.appendChild(del);
+
+        document.getElementById('taskList').appendChild(li);
+        input.value = '';
+    }
+</script>
+
+</body>
+</html>
