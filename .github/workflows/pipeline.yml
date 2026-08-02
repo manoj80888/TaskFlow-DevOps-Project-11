@@ -31,18 +31,18 @@ jobs:
     steps:
       - name: Deploy via Native SSH to EC2
         run: |
-          # 1. Save the SSH private key securely inside the runner environment
+          # Write the private key securely to the runner filesystem
           echo "${{ secrets.EC2_SSH_KEY }}" > private_key.pem
           chmod 600 private_key.pem
           
-          # 2. Execute commands on the EC2 host using standard OpenSSH flags
+          # Force connection using standard OpenSSH client with legacy RSA types explicitly accepted
           ssh -i private_key.pem -o StrictHostKeyChecking=no -o PubkeyAcceptedKeyTypes=+ssh-rsa ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} << 'EOF'
             export KUBECONFIG=~/.kube/config
             
-            # Formulate the namespace
+            # Formulate the namespace if it doesn't exist
             kubectl create namespace taskflow --dry-run=client -o yaml | kubectl apply -f -
             
-            # Pull down manifests and apply updates
+            # Fetch, modify, and apply the deployment manifests directly on the host
             curl -s https://raw.githubusercontent.com/${{ github.repository }}/main/kubernetes/deployment.yaml | sed 's|YOUR_DOCKER_USERNAME|${{ secrets.DOCKER_USERNAME }}|g' | kubectl apply -f -
             kubectl set image deployment/taskflow-app taskflow=${{ secrets.DOCKER_USERNAME }}/taskflow:${{ github.run_number }} -n taskflow
             curl -s https://raw.githubusercontent.com/${{ github.repository }}/main/kubernetes/service.yaml | kubectl apply -f -
